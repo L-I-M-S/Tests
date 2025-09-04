@@ -1,241 +1,754 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EaseMind - Your mental health companion app with tools for mindfulness, mood tracking, and support.">
     <title>EaseMind - Mental Health Companion</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4A90E2; /* Lifeboat Blue */
+            --secondary-color: #8E44AD; /* Tulipan Violet */
+            --background-color: #F5F5F5;
+            --text-color: #333;
+            --accent-color: #27AE60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-button {
+            padding: 0.6rem 0.8rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color 0.3s, background-color 0.3s;
+        }
+
+        .tab-button:hover, .tab-button:focus {
+            background: var(--primary-color);
+            color: white;
+            outline: none;
+        }
+
+        .tab-button[aria-selected="true"] {
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        section {
+            display: none;
+            padding: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        button {
+            padding: 0.6rem 1.2rem;
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        button:hover, button:focus {
+            background: var(--primary-color);
+            outline: none;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.6rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .error {
+            color: #D32F2F;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        .progress-ring circle {
+            stroke: var(--accent-color);
+            stroke-width: 8;
+            fill: none;
+        }
+
+        .breathing-circle {
+            width: 150px;
+            height: 150px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            margin: 1rem auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 4s ease-in-out;
+        }
+
+        .breathing-circle.inner {
+            width: 120px;
+            height: 120px;
+            background: var(--secondary-color);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-color);
+            transition: width 0.3s;
+        }
+
+        canvas {
+            max-width: 100%;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .tab-button {
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .breathing-circle {
+                width: 120px;
+                height: 120px;
+            }
+
+            .breathing-circle.inner {
+                width: 90px;
+                height: 90px;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Onboarding Modal -->
-    <div id="onboarding-modal" class="modal" role="dialog" aria-labelledby="modal-title">
-        <div class="modal-content">
-            <h2 id="modal-title">Welcome to EaseMind</h2>
-            <p>Your companion for mental well-being. Explore tools like breathing exercises, mood tracking, and gratitude journaling to support your journey. Start with the dashboard for a daily overview.</p>
-            <button id="close-onboarding" aria-label="Close onboarding modal">Get Started</button>
-        </div>
-    </div>
-
     <header>
-        <div class="header-content">
-            <h1>EaseMind</h1>
-            <p>Your gentle companion for navigating grief, panic, and depression.</p>
-            <a href="#crisis" class="crisis-link" aria-label="Access crisis support resources"><i class="fas fa-phone"></i> Crisis Support</a>
-        </div>
+        <h1>EaseMind</h1>
+        <a href="#crisis" aria-label="Crisis Support">Crisis Support</a>
     </header>
-
-    <nav class="tabs" role="tablist">
-        <button class="tab-btn active" data-tab="dashboard" role="tab" aria-selected="true" aria-controls="dashboard" tabindex="0"><i class="fas fa-home"></i> Dashboard</button>
-        <button class="tab-btn" data-tab="breathing" role="tab" aria-selected="false" aria-controls="breathing" tabindex="0"><i class="fas fa-wind"></i> Breathing</button>
-        <button class="tab-btn" data-tab="grounding" role="tab" aria-selected="false" aria-controls="grounding" tabindex="0"><i class="fas fa-leaf"></i> Grounding</button>
-        <button class="tab-btn" data-tab="mood-tracker" role="tab" aria-selected="false" aria-controls="mood-tracker" tabindex="0"><i class="fas fa-chart-line"></i> Mood Tracker</button>
-        <button class="tab-btn" data-tab="cbt-exercise" role="tab" aria-selected="false" aria-controls="cbt-exercise" tabindex="0"><i class="fas fa-brain"></i> CBT Tools</button>
-        <button class="tab-btn" data-tab="gratitude" role="tab" aria-selected="false" aria-controls="gratitude" tabindex="0"><i class="fas fa-heart"></i> Gratitude</button>
-        <button class="tab-btn" data-tab="mindfulness" role="tab" aria-selected="false" aria-controls="mindfulness" tabindex="0"><i class="fas fa-spa"></i> Mindfulness</button>
-        <button class="tab-btn" data-tab="resources" role="tab" aria-selected="false" aria-controls="resources" tabindex="0"><i class="fas fa-book"></i> Resources</button>
+    <nav role="tablist">
+        <button class="tab-button" role="tab" aria-selected="true" aria-controls="dashboard" id="tab-dashboard">Dashboard</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="breathing" id="tab-breathing">Breathing</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="grounding" id="tab-grounding">Grounding</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="mood" id="tab-mood">Mood Tracker</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="cbt" id="tab-cbt">CBT Tools</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="gratitude" id="tab-gratitude">Gratitude</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="mindfulness" id="tab-mindfulness">Mindfulness</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="resources" id="tab-resources">Resources</button>
+        <button class="tab-button" role="tab" aria-selected="false" aria-controls="crisis" id="tab-crisis">Crisis Support</button>
     </nav>
-
     <main>
-        <!-- Dashboard Section -->
-        <section id="dashboard" class="tab-content active" role="tabpanel" aria-labelledby="dashboard-title">
-            <h2 id="dashboard-title">Welcome to EaseMind</h2>
-            <p>Your daily mental health overview. Start your day with intention.</p>
-            <div class="dashboard-progress">
-                <svg class="progress-ring" width="120" height="120">
-                    <circle class="progress-ring-bg" cx="60" cy="60" r="50" />
-                    <circle id="progress-ring-fill" class="progress-ring-fill" cx="60" cy="60" r="50" />
-                </svg>
-                <p id="progress-text">0% Today’s Activities</p>
-            </div>
-            <div class="dashboard-summary">
-                <div class="dash-item">
-                    <h3>Activity Streaks</h3>
-                    <p>Breathing: <span id="dash-breathing-streak">0</span> days</p>
-                    <p>Mood Logs: <span id="dash-mood-streak">0</span> days</p>
-                    <p>Gratitude: <span id="dash-gratitude-streak">0</span> days</p>
-                    <p>Mindfulness: <span id="dash-mindfulness-streak">0</span> days</p>
-                </div>
-                <div class="dash-item">
-                    <h3>Recent Mood</h3>
-                    <p id="dash-recent-mood">No recent logs</p>
-                </div>
-                <div class="dash-item">
-                    <h3>Daily Inspiration</h3>
-                    <p id="daily-quote" class="fade">Take a deep breath and embrace the moment.</p>
-                </div>
-            </div>
-            <div class="quick-actions">
-                <button onclick="switchTab('breathing')" aria-label="Start breathing exercise"><i class="fas fa-wind"></i> Quick Breathe</button>
-                <button onclick="switchTab('mood-tracker')" aria-label="Log your mood"><i class="fas fa-chart-line"></i> Log Mood</button>
-                <button onclick="switchTab('gratitude')" aria-label="Write a gratitude note"><i class="fas fa-heart"></i> Gratitude Note</button>
+        <section id="dashboard" class="active" role="tabpanel" aria-labelledby="tab-dashboard">
+            <h2>Dashboard</h2>
+            <div id="streak">Streak: <span id="streak-count">0</span> days</div>
+            <div id="recent-mood">Recent Mood: <span id="mood-text">N/A</span></div>
+            <div id="quote" aria-live="polite">Take a deep breath and start your journey.</div>
+            <svg class="progress-ring" width="120" height="120">
+                <circle cx="60" cy="60" r="50" />
+            </svg>
+            <div id="progress-text">Progress: <span id="progress-value">0%</span></div>
+            <div>
+                <button onclick="switchTab('breathing')">Quick Breathing</button>
+                <button onclick="switchTab('mood')">Log Mood</button>
+                <button onclick="switchTab('gratitude')">Gratitude Journal</button>
             </div>
         </section>
-
-        <!-- Breathing Exercise Section -->
-        <section id="breathing" class="tab-content" role="tabpanel" aria-labelledby="breathing-title">
-            <h2 id="breathing-title">Guided Box Breathing</h2>
-            <p>Follow the 4-4-4-4 cycle: Inhale, Hold, Exhale, Hold. Ideal for panic and stress.</p>
-            <div class="breathing-container">
-                <div id="breathing-circle" aria-live="polite">
-                    <div class="circle-inner"></div>
-                </div>
-                <p id="breathing-instruction" class="fade">Ready to begin?</p>
+        <section id="breathing" role="tabpanel" aria-labelledby="tab-breathing">
+            <h2>Box Breathing</h2>
+            <div class="breathing-circle" id="breathing-circle">
+                <div class="breathing-circle inner"></div>
             </div>
-            <button id="start-breathing" aria-label="Start or stop breathing exercise"><i class="fas fa-play"></i> Start</button>
-            <div class="progress-bar">
-                <div id="breathing-progress"></div>
-            </div>
-            <div class="streak-counter">Streak: <span id="breathing-streak">0</span> days</div>
+            <div id="breathing-text" aria-live="polite">Click Start to Begin</div>
+            <button id="breathing-button">Start</button>
+            <button id="breathing-pause" style="display:none;">Pause</button>
+            <div class="progress-bar"><div class="progress-bar-fill" id="breathing-progress"></div></div>
         </section>
-
-        <!-- Grounding Exercise Section -->
-        <section id="grounding" class="tab-content" role="tabpanel" aria-labelledby="grounding-title">
-            <h2 id="grounding-title">5-4-3-2-1 Grounding</h2>
-            <p>Anchoring yourself in the present using your senses. Great for overwhelming thoughts.</p>
-            <div id="grounding-step" class="grounding-display fade" aria-live="polite"></div>
-            <div class="grounding-inputs">
-                <textarea id="grounding-response" placeholder="List items separated by commas..." aria-label="Enter grounding responses"></textarea>
-                <p id="grounding-error" class="error-message" aria-live="assertive"></p>
-                <button id="submit-response" disabled aria-label="Submit grounding response">Submit</button>
-            </div>
-            <button id="start-grounding" aria-label="Start or advance grounding exercise"><i class="fas fa-play"></i> Start</button>
-            <div id="grounding-history" class="history-container">
-                <h3>Past Sessions</h3>
-            </div>
+        <section id="grounding" role="tabpanel" aria-labelledby="tab-grounding">
+            <h2>5-4-3-2-1 Grounding</h2>
+            <p id="grounding-step" aria-live="polite">List 5 things you can see.</p>
+            <input type="text" id="grounding-input" placeholder="Enter items, separated by commas">
+            <div id="grounding-error" class="error" aria-live="assertive"></div>
+            <button id="grounding-submit">Submit</button>
+            <button id="grounding-restart" style="display:none;">Restart</button>
+            <div id="grounding-history"></div>
         </section>
-
-        <!-- Mood Tracker Section -->
-        <section id="mood-tracker" class="tab-content" role="tabpanel" aria-labelledby="mood-tracker-title">
-            <h2 id="mood-tracker-title">Mood Tracker</h2>
-            <p>Log your moods daily to observe patterns and progress. Notes help reflect on triggers.</p>
-            <div class="mood-log">
-                <div class="mood-emojis" role="radiogroup" aria-label="Select your mood">
-                    <label>
-                        <input type="radio" name="mood" value="5" aria-label="Very Good mood">
-                        <span>😊</span> Very Good
-                    </label>
-                    <label>
-                        <input type="radio" name="mood" value="4" aria-label="Good mood">
-                        <span>🙂</span> Good
-                    </label>
-                    <label>
-                        <input type="radio" name="mood" value="3" aria-label="Neutral mood">
-                        <span>😐</span> Neutral
-                    </label>
-                    <label>
-                        <input type="radio" name="mood" value="2" aria-label="Low mood">
-                        <span>🙁</span> Low
-                    </label>
-                    <label>
-                        <input type="radio" name="mood" value="1" aria-label="Very Low mood">
-                        <span>😢</span> Very Low
-                    </label>
-                </div>
-                <textarea id="mood-notes" placeholder="What influenced your mood today? (optional)" aria-label="Add mood notes"></textarea>
-                <p id="mood-error" class="error-message" aria-live="assertive"></p>
-                <button id="log-mood" disabled aria-label="Log your mood"><i class="fas fa-save"></i> Log Mood</button>
+        <section id="mood" role="tabpanel" aria-labelledby="tab-mood">
+            <h2>Mood Tracker</h2>
+            <div id="mood-placeholder" style="display:none;">No mood data logged yet. Start by selecting a mood below!</div>
+            <canvas id="mood-chart"></canvas>
+            <table id="mood-table" class="sr-only">
+                <caption>Mood History</caption>
+                <tr><th>Date</th><th>Mood</th></tr>
+            </table>
+            <div>
+                <label><input type="radio" name="mood" value="1"> 😢</label>
+                <label><input type="radio" name="mood" value="2"> 😕</label>
+                <label><input type="radio" name="mood" value="3"> 😐</label>
+                <label><input type="radio" name="mood" value="4"> 😊</label>
+                <label><input type="radio" name="mood" value="5"> 😄</label>
             </div>
-            <canvas id="mood-chart" width="400" height="200" aria-label="Mood trend chart"></canvas>
-            <div id="mood-history" class="history-container">
-                <h3>Past Entries</h3>
-            </div>
-            <div class="streak-counter">Streak: <span id="mood-streak">0</span> days</div>
+            <textarea id="mood-notes" placeholder="Add notes (optional)"></textarea>
+            <div id="mood-error" class="error" aria-live="assertive"></div>
+            <button id="mood-submit">Log Mood</button>
+            <div id="mood-history"></div>
         </section>
-
-        <!-- CBT Exercise Section -->
-        <section id="cbt-exercise" class="tab-content" role="tabpanel" aria-labelledby="cbt-exercise-title">
-            <h2 id="cbt-exercise-title">CBT Thought Record</h2>
-            <p>Challenge negative thoughts using Cognitive Behavioral Therapy techniques.</p>
-            <div class="cbt-form">
-                <label for="cbt-situation">Situation</label>
-                <textarea id="cbt-situation" placeholder="What happened? (e.g., Argument with a friend)" aria-label="Describe the situation"></textarea>
-                <label for="cbt-thought">Negative Thought</label>
-                <textarea id="cbt-thought" placeholder="What did you think? (e.g., They hate me)" aria-label="Describe the negative thought"></textarea>
-                <label for="cbt-evidence-for">Evidence For</label>
-                <textarea id="cbt-evidence-for" placeholder="What supports this thought?" aria-label="List evidence supporting the thought"></textarea>
-                <label for="cbt-evidence-against">Evidence Against</label>
-                <textarea id="cbt-evidence-against" placeholder="What contradicts this thought?" aria-label="List evidence against the thought"></textarea>
-                <label for="cbt-balanced">Balanced Thought</label>
-                <textarea id="cbt-balanced" placeholder="A more balanced perspective" aria-label="Write a balanced thought"></textarea>
-                <p id="cbt-error" class="error-message" aria-live="assertive"></p>
-                <button id="log-cbt" disabled aria-label="Save thought record"><i class="fas fa-save"></i> Save Thought Record</button>
-            </div>
-            <div id="cbt-history" class="history-container">
-                <h3>Past Thought Records</h3>
-            </div>
+        <section id="cbt" role="tabpanel" aria-labelledby="tab-cbt">
+            <h2>CBT Thought Record</h2>
+            <input type="text" id="cbt-situation" placeholder="Situation" maxlength="200">
+            <input type="text" id="cbt-thought" placeholder="Negative Thought" maxlength="200">
+            <input type="text" id="cbt-evidence-for" placeholder="Evidence For" maxlength="200">
+            <input type="text" id="cbt-evidence-against" placeholder="Evidence Against" maxlength="200">
+            <input type="text" id="cbt-balanced" placeholder="Balanced Thought" maxlength="200">
+            <div id="cbt-error" class="error" aria-live="assertive"></div>
+            <button id="cbt-submit">Submit</button>
+            <div id="cbt-history"></div>
         </section>
-
-        <!-- Gratitude Journal Section -->
-        <section id="gratitude" class="tab-content" role="tabpanel" aria-labelledby="gratitude-title">
-            <h2 id="gratitude-title">Gratitude Journal</h2>
-            <p>Reflect on positive aspects to boost mood and resilience. List 3 things you’re grateful for.</p>
-            <div class="gratitude-form">
-                <textarea id="gratitude-entry" placeholder="What are you grateful for today? List 3 things..." aria-label="Write gratitude entry"></textarea>
-                <p id="gratitude-error" class="error-message" aria-live="assertive"></p>
-                <button id="log-gratitude" disabled aria-label="Save gratitude entry"><i class="fas fa-save"></i> Save Entry</button>
-            </div>
-            <div id="gratitude-history" class="history-container">
-                <h3>Past Entries</h3>
-            </div>
-            <div class="streak-counter">Streak: <span id="gratitude-streak">0</span> days</div>
+        <section id="gratitude" role="tabpanel" aria-labelledby="tab-gratitude">
+            <h2>Gratitude Journal</h2>
+            <input type="text" id="gratitude-input" placeholder="Enter 3 things you're grateful for, separated by commas">
+            <div id="gratitude-error" class="error" aria-live="assertive"></div>
+            <button id="gratitude-submit">Submit</button>
+            <div id="gratitude-history"></div>
         </section>
-
-        <!-- Mindfulness Meditation Section -->
-        <section id="mindfulness" class="tab-content" role="tabpanel" aria-labelledby="mindfulness-title">
-            <h2 id="mindfulness-title">Mindfulness Meditation</h2>
-            <p>Practice a 1-minute guided mindfulness exercise to center yourself. No audio, just calm prompts.</p>
-            <div class="mindfulness-container">
-                <p id="mindfulness-instruction" class="fade" aria-live="polite">Ready to begin?</p>
-                <div class="progress-bar">
-                    <div id="mindfulness-progress"></div>
-                </div>
-            </div>
-            <button id="start-mindfulness" aria-label="Start or stop mindfulness meditation"><i class="fas fa-play"></i> Start</button>
-            <div class="streak-counter">Streak: <span id="mindfulness-streak">0</span> days</div>
+        <section id="mindfulness" role="tabpanel" aria-labelledby="tab-mindfulness">
+            <h2>Mindfulness Meditation</h2>
+            <div id="mindfulness-text" aria-live="polite">Click Start to Begin</div>
+            <button id="mindfulness-button">Start</button>
+            <button id="mindfulness-pause" style="display:none;">Pause</button>
+            <div class="progress-bar"><div class="progress-bar-fill" id="mindfulness-progress"></div></div>
         </section>
-
-        <!-- Resources Section -->
-        <section id="resources" class="tab-content" role="tabpanel" aria-labelledby="resources-title">
-            <h2 id="resources-title">Educational Resources</h2>
-            <p>Learn more about mental health with curated, evidence-based content.</p>
-            <div class="resource-list">
-                <div class="resource-item">
-                    <h3>Understanding Anxiety</h3>
-                    <p>Anxiety is a normal response to stress, but when overwhelming, it can disrupt life. Learn coping strategies.</p>
-                    <a href="https://www.nimh.nih.gov/health/topics/anxiety-disorders" class="resource-link" target="_blank" aria-label="Read more about anxiety">Read More</a>
-                </div>
-                <div class="resource-item">
-                    <h3>Managing Depression</h3>
-                    <p>Depression impacts mood and energy. Discover evidence-based ways to manage symptoms.</p>
-                    <a href="https://www.nimh.nih.gov/health/topics/depression" class="resource-link" target="_blank" aria-label="Read more about depression">Read More</a>
-                </div>
-                <div class="resource-item">
-                    <h3>Navigating Grief</h3>
-                    <p>Grief is a natural response to loss. Explore stages and healthy coping methods.</p>
-                    <a href="https://www.mayoclinic.org/patient-visitor-guide/support-groups/grief-support" class="resource-link" target="_blank" aria-label="Read more about grief">Read More</a>
-                </div>
-            </div>
+        <section id="resources" role="tabpanel" aria-labelledby="tab-resources">
+            <h2>Resources</h2>
+            <ul>
+                <li><a href="https://www.nimh.nih.gov/health/topics/anxiety-disorders" target="_blank" rel="noopener">NIMH: Anxiety Disorders</a></li>
+                <li><a href="https://www.nimh.nih.gov/health/topics/depression" target="_blank" rel="noopener">NIMH: Depression</a></li>
+                <li><a href="https://www.mayoclinic.org/patient-visitor-guide/support-groups/grief-support" target="_blank" rel="noopener">Mayo Clinic: Grief Support</a></li>
+                <li><a href="https://findahelpline.com" target="_blank" rel="noopener">Find a Helpline</a></li>
+                <li><a href="https://www.7cups.com" target="_blank" rel="noopener">7 Cups: Online Peer Support</a></li>
+            </ul>
         </section>
-
-        <!-- Crisis Support Section -->
-        <section id="crisis" class="tab-content" role="tabpanel" aria-labelledby="crisis-title">
-            <h2 id="crisis-title">Crisis Support</h2>
-            <p>In a crisis? Reach out for immediate help.</p>
-            <div class="crisis-resources">
-                <p><strong>U.S. Crisis Line:</strong> Call <a href="tel:988" aria-label="Call U.S. crisis line">988</a></p>
-                <p><strong>International:</strong> Find your local crisis line at <a href="https://findahelpline.com" target="_blank" aria-label="Find international crisis lines">findahelpline.com</a></p>
-                <p><strong>Emergency:</strong> If in immediate danger, call <a href="tel:911" aria-label="Call emergency services">911</a> (U.S.) or your local emergency number.</p>
-            </div>
+        <section id="crisis" role="tabpanel" aria-labelledby="tab-crisis">
+            <h2>Crisis Support</h2>
+            <p>If you're in crisis, please reach out immediately:</p>
+            <ul>
+                <li><a href="tel:988" id="crisis-988">988 Suicide & Crisis Lifeline</a></li>
+                <li><a href="tel:911" id="crisis-911">911 Emergency Services</a></li>
+                <li><a href="https://findahelpline.com" target="_blank" rel="noopener">Find a Helpline</a></li>
+                <li><button id="panic-button">Panic Button</button></li>
+            </ul>
+            <p id="tel-fallback" style="display:none;">Note: Phone links may not work on this device. Please dial 988 or 911 directly.</p>
+        </section>
+        <section id="privacy" role="tabpanel" aria-labelledby="tab-privacy">
+            <h2>Privacy Policy</h2>
+            <p>EaseMind is committed to protecting your privacy. All data (mood logs, gratitude entries, etc.) is stored locally on your device using localStorage and is not transmitted to any servers. We do not collect or share personal information. External links (e.g., to NIMH, Mayo Clinic) are provided for your convenience, and we encourage you to review their privacy policies.</p>
+            <p>For questions, contact us at <a href="mailto:support@easemind.app">support@easemind.app</a>.</p>
         </section>
     </main>
-
+    <div class="modal" id="onboarding-modal" role="dialog" aria-labelledby="modal-title">
+        <div class="modal-content">
+            <h2 id="modal-title">Welcome to EaseMind</h2>
+            <p>Your companion for mental well-being. Explore tools to manage stress, track moods, and find support.</p>
+            <button id="modal-start">Get Started</button>
+            <button id="modal-skip">Skip</button>
+        </div>
+    </div>
     <footer>
-        <p>&copy; 2025 EaseMind. <a href="#privacy" aria-label="View privacy policy">Privacy Policy</a> | Data secured with encryption. For immediate help, call <a href="tel:988" aria-label="Call U.S. crisis line">988</a> (U.S.).</p>
+        <p>&copy; 2025 EaseMind. <a href="#privacy">Privacy Policy</a></p>
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sanitize-html/2.7.0/sanitize-html.min.js"></script>
+    <script>
+        const quotes = [
+            "You are enough just as you are.",
+            "Take it one step at a time.",
+            "Your journey matters."
+        ];
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+        let isBreathing = false, isMeditating = false;
+        let breathingStart, mindfulnessStart;
+        let currentStep = 0;
+        let groundingResponses = [];
+        let moodChart;
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.setAttribute('aria-selected', btn.id === `tab-${tabId}`);
+            });
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.toggle('active', section.id === tabId);
+            });
+            document.getElementById(`tab-${tabId}`).focus();
+            // Stop animations if switching tabs
+            if (isBreathing) startBreathing();
+            if (isMeditating) startMindfulness();
+        }
+
+        function trapFocus(element) {
+            const focusableElements = element.querySelectorAll('button, [href], input, textarea, [tabindex]:not([tabindex="-1"])');
+            const first = focusableElements[0];
+            const last = focusableElements[focusableElements.length - 1];
+            element.addEventListener('keydown', e => {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey && document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    } else if (!e.shiftKey && document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    }
+                }
+            });
+        }
+
+        function updateProgress() {
+            const activities = ['breathing', 'grounding', 'mood', 'cbt', 'gratitude', 'mindfulness'];
+            const completed = activities.filter(a => localStorage.getItem(a)).length;
+            const progress = (completed / activities.length) * 100;
+            const circle = document.querySelector('.progress-ring circle');
+            const r = circle.getAttribute('r');
+            const c = 2 * Math.PI * r;
+            circle.setAttribute('stroke-dasharray', `${c} ${c}`);
+            circle.setAttribute('stroke-dashoffset', c * (1 - progress / 100));
+            document.getElementById('progress-value').textContent = `${Math.round(progress)}%`;
+        }
+
+        function updateStreak(activity) {
+            const today = new Date().toDateString();
+            let streak = JSON.parse(localStorage.getItem('streak') || '{}');
+            if (streak.date !== today) {
+                streak = { date: today, count: streak.date ? streak.count + 1 : 1 };
+            }
+            localStorage.setItem('streak', JSON.stringify(streak));
+            localStorage.setItem(activity, 'true');
+            document.getElementById('streak-count').textContent = streak.count;
+            updateProgress();
+        }
+
+        function rotateQuote() {
+            const quoteEl = document.getElementById('quote');
+            quoteEl.style.opacity = 0;
+            setTimeout(() => {
+                quoteEl.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+                quoteEl.style.opacity = 1;
+            }, 500);
+        }
+
+        function scheduleReminder26() {
+            const now = new Date();
+            const nextReminder = new Date();
+            nextReminder.setHours(20, 0, 0, 0);
+            if (now > nextReminder) nextReminder.setDate(nextReminder.getDate() + 1);
+            const timeout = nextReminder - now;
+            setTimeout(() => {
+                alert('EaseMind Reminder: Take a moment to log your mood or try a breathing exercise.');
+                scheduleReminder();
+            }, timeout);
+        }
+
+        function startBreathing() {
+            const button = document.getElementById('breathing-button');
+            const pauseButton = document.getElementById('breathing-pause');
+            if (isBreathing) {
+                isBreathing = false;
+                cancelAnimationFrame(breathingStart);
+                button.style.display = 'inline-block';
+                pauseButton.style.display = 'none';
+                document.getElementById('breathing-text').textContent = 'Click Start to Begin';
+                document.getElementById('breathing-progress').style.width = '0%';
+                document.getElementById('breathing-circle').style.transform = 'scale(1)';
+                return;
+            }
+            isBreathing = true;
+            button.style.display = 'none';
+            pauseButton.style.display = 'inline-block';
+            const circle = document.getElementById('breathing-circle');
+            const text = document.getElementById('breathing-text');
+            const progress = document.getElementById('breathing-progress');
+            let startTime;
+            const cycle = ['Inhale', 'Hold', 'Exhale', 'Hold'];
+            let cycleIndex = 0;
+            let cyclesCompleted = 0;
+            function animate(time) {
+                if (!startTime) startTime = time;
+                const elapsed = (time - startTime) / 1000;
+                const phase = Math.floor(elapsed / 4) % 4;
+                const phaseProgress = (elapsed % 4) / 4;
+                text.textContent = cycle[cycleIndex];
+                circle.style.transform = `scale(${1 + (phase < 2 ? phaseProgress * 0.3 : 0.3 - phaseProgress * 0.3)})`;
+                progress.style.width = `${(cyclesCompleted + phaseProgress) * 10}%`;
+                if (phase !== cycleIndex) {
+                    cycleIndex = phase;
+                    if (cycleIndex === 0) cyclesCompleted++;
+                    if (cyclesCompleted >= 10) {
+                        updateStreak('breathing');
+                        startBreathing();
+                        alert('Great job completing your breathing exercise!');
+                    }
+                }
+                if (isBreathing) breathingStart = requestAnimationFrame(animate);
+            }
+            breathingStart = requestAnimationFrame(animate);
+        }
+
+        function startMindfulness() {
+            const button = document.getElementById('mindfulness-button');
+            const pauseButton = document.getElementById('mindfulness-pause');
+            if (isMeditating) {
+                isMeditating = false;
+                cancelAnimationFrame(mindfulnessStart);
+                button.style.display = 'inline-block';
+                pauseButton.style.display = 'none';
+                document.getElementById('mindfulness-text').textContent = 'Click Start to Begin';
+                document.getElementById('mindfulness-progress').style.width = '0%';
+                return;
+            }
+            isMeditating = true;
+            button.style.display = 'none';
+            pauseButton.style.display = 'inline-block';
+            const text = document.getElementById('mindfulness-text');
+            const progress = document.getElementById('mindfulness-progress');
+            let startTime;
+            const prompts = [
+                'Focus on your breath.',
+                'Notice your thoughts without judgment.',
+                'Feel your body relax.',
+                'Return to your breath.'
+            ];
+            let promptIndex = 0;
+            function animate(time) {
+                if (!startTime) startTime = time;
+                const elapsed = (time - startTime) / 1000;
+                promptIndex = Math.floor(elapsed / 15) % 4;
+                text.textContent = prompts[promptIndex];
+                progress.style.width = `${(elapsed / 60) * 100}%`;
+                if (elapsed >= 60) {
+                    updateStreak('mindfulness');
+                    startMindfulness();
+                    alert('Wonderful work on your meditation!');
+                } else if (isMeditating) {
+                    mindfulnessStart = requestAnimationFrame(animate);
+                }
+            }
+            mindfulnessStart = requestAnimationFrame(animate);
+        }
+
+        function validateItems(input, minCount) {
+            const items = input.split(',')
+                .map(item => item.trim())
+                .filter(item => item.length > 0)
+                .filter((item, index, self) => self.indexOf(item) === index);
+            return items.length >= minCount ? items : null;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Onboarding
+            if (!localStorage.getItem('hasSeenOnboarding')) {
+                const modal = document.getElementById('onboarding-modal');
+                modal.style.display = 'flex';
+                trapFocus(modal);
+                document.getElementById('modal-start').addEventListener('click', () => {
+                    modal.style.display = 'none';
+                    localStorage.setItem('hasSeenOnboarding', 'true');
+                    switchTab('dashboard');
+                });
+                document.getElementById('modal-skip').addEventListener('click', () => {
+                    modal.style.display = 'none';
+                    localStorage.setItem('hasSeenOnboarding', 'true');
+                    switchTab('dashboard');
+                });
+            }
+
+            // Tab Navigation
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.getAttribute('aria-controls')));
+                btn.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        switchTab(btn.getAttribute('aria-controls'));
+                    }
+                });
+            });
+
+            // Dashboard
+            updateProgress();
+            document.getElementById('streak-count').textContent = JSON.parse(localStorage.getItem('streak') || '{}').count || 0;
+            rotateQuote();
+            setInterval(rotateQuote, 30000);
+
+            // Breathing
+            document.getElementById('breathing-button').addEventListener('click', startBreathing);
+            document.getElementById('breathing-pause').addEventListener('click', startBreathing);
+
+            // Grounding
+            const groundingSteps = [
+                'List 5 things you can see.',
+                'List 4 things you can touch.',
+                'List 3 things you can hear.',
+                'List 2 things you can smell.',
+                'List 1 thing you can taste.'
+            ];
+            const groundingCounts = [5, 4, 3, 2, 1];
+            const groundingInput = document.getElementById('grounding-input');
+            const groundingError = document.getElementById('grounding-error');
+            const groundingHistory = document.getElementById('grounding-history');
+            groundingHistory.innerHTML = JSON.parse(localStorage.getItem('groundingHistory') || '[]')
+                .map(h => `<p>${new Date(h.date).toLocaleString()}: ${sanitizeHtml(h.response)}</p>`).join('');
+            document.getElementById('grounding-submit').addEventListener('click', () => {
+                const items = validateItems(groundingInput.value, groundingCounts[currentStep]);
+                if (!items) {
+                    groundingError.textContent = `Please enter at least ${groundingCounts[currentStep]} unique items without extra spaces.`;
+                    return;
+                }
+                groundingResponses.push(items.join(', '));
+                currentStep++;
+                if (currentStep < groundingSteps.length) {
+                    document.getElementById('grounding-step').textContent = groundingSteps[currentStep];
+                    groundingInput.value = '';
+                    groundingError.textContent = '';
+                } else {
+                    const history = JSON.parse(localStorage.getItem('groundingHistory') || '[]');
+                    history.push({ date: new Date().toISOString(), response: groundingResponses.join('; ') });
+                    localStorage.setItem('groundingHistory', JSON.stringify(history));
+                    groundingHistory.innerHTML = history.map(h => `<p>${new Date(h.date).toLocaleString()}: ${sanitizeHtml(h.response)}</p>`).join('');
+                    updateStreak('grounding');
+                    groundingInput.style.display = 'none';
+                    document.getElementById('grounding-submit').style.display = 'none';
+                    document.getElementById('grounding-restart').style.display = 'inline-block';
+                    document.getElementById('grounding-step').textContent = 'Great job grounding yourself!';
+                    alert('You’ve completed the grounding exercise!');
+                }
+            });
+            document.getElementById('grounding-restart').addEventListener('click', () => {
+                currentStep = 0;
+                groundingResponses = [];
+                groundingInput.style.display = 'block';
+                document.getElementById('grounding-submit').style.display = 'inline-block';
+                document.getElementById('grounding-restart').style.display = 'none';
+                document.getElementById('grounding-step').textContent = groundingSteps[0];
+                groundingInput.value = '';
+                groundingError.textContent = '';
+            });
+
+            // Mood Tracker
+            const moods = JSON.parse(localStorage.getItem('moods') || '[]');
+            const moodTable = document.getElementById('mood-table');
+            const moodHistory = document.getElementById('mood-history');
+            moodHistory.innerHTML = moods.map(m => `<p>${new Date(m.date).toLocaleString()}: ${m.mood} - ${sanitizeHtml(m.notes)}</p>`).join('');
+            if (moods.length === 0) {
+                document.getElementById('mood-placeholder').style.display = 'block';
+                document.getElementById('mood-chart').style.display = 'none';
+            } else {
+                moodTable.innerHTML += moods.map(m => `<tr><td>${new Date(m.date).toLocaleString()}</td><td>${m.mood}</td></tr>`).join('');
+                const ctx = document.getElementById('mood-chart').getContext('2d');
+                moodChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: moods.map(m => new Date(m.date).toLocaleDateString()),
+                        datasets: [{ label: 'Mood', data: moods.map(m => m.mood), borderColor: var(--secondary-color) }]
+                    },
+                    options: { scales: { y: { min: 1, max: 5 } } }
+                });
+            }
+            document.getElementById('mood-submit').addEventListener('click', () => {
+                const mood = document.querySelector('input[name="mood"]:checked');
+                const notes = document.getElementById('mood-notes').value;
+                if (!mood) {
+                    document.getElementById('mood-error').textContent = 'Please select a mood.';
+                    return;
+                }
+                const sanitizedNotes = sanitizeHtml(notes.substring(0, 200));
+                moods.push({ date: new Date().toISOString(), mood: parseInt(mood.value), notes: sanitizedNotes });
+                localStorage.setItem('moods', JSON.stringify(moods));
+                moodHistory.innerHTML = moods.map(m => `<p>${new Date(m.date).toLocaleString()}: ${m.mood} - ${sanitizedNotes}</p>`).join('');
+                moodTable.innerHTML = `<caption>Mood History</caption><tr><th>Date</th><th>Mood</th></tr>` + 
+                    moods.map(m => `<tr><td>${new Date(m.date).toLocaleString()}</td><td>${m.mood}</td></tr>`).join('');
+                if (moods.length === 1) {
+                    document.getElementById('mood-placeholder').style.display = 'none';
+                    document.getElementById('mood-chart').style.display = 'block';
+                    const ctx = document.getElementById('mood-chart').getContext('2d');
+                    moodChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: moods.map(m => new Date(m.date).toLocaleDateString()),
+                            datasets: [{ label: 'Mood', data: moods.map(m => m.mood), borderColor: var(--secondary-color) }]
+                        },
+                        options: { scales: { y: { min: 1, max: 5 } } }
+                    });
+                } else {
+                    moodChart.data.labels = moods.map(m => new Date(m.date).toLocaleDateString());
+                    moodChart.data.datasets[0].data = moods.map(m => m.mood);
+                    moodChart.update();
+                }
+                updateStreak('mood');
+                document.getElementById('mood-text').textContent = mood.value;
+                document.querySelector('input[name="mood"]:checked').checked = false;
+                document.getElementById('mood-notes').value = '';
+                document.getElementById('mood-error').textContent = '';
+                alert('Great job logging your mood!');
+            });
+
+            // CBT
+            const cbtHistory = document.getElementById('cbt-history');
+            cbtHistory.innerHTML = JSON.parse(localStorage.getItem('cbtHistory') || '[]')
+                .map(h => `<p>${new Date(h.date).toLocaleString()}: ${sanitizeHtml(h.situation)} - ${sanitizeHtml(h.thought)}</p>`).join('');
+            document.getElementById('cbt-submit').addEventListener('click', () => {
+                const fields = ['situation', 'thought', 'evidence-for', 'evidence-against', 'balanced'];
+                const values = fields.map(f => sanitizeHtml(document.getElementById(`cbt-${f}`).value.substring(0, 200)));
+                if (values.some(v => !v)) {
+                    document.getElementById('cbt-error').textContent = 'Please fill out all fields.';
+                    return;
+                }
+                const history = JSON.parse(localStorage.getItem('cbtHistory') || '[]');
+                history.push({ date: new Date().toISOString(), situation: values[0], thought: values[1], evidenceFor: values[2], evidenceAgainst: values[3], balanced: values[4] });
+                localStorage.setItem('cbtHistory', JSON.stringify(history));
+                cbtHistory.innerHTML = history.map(h => `<p>${new Date(h.date).toLocaleString()}: ${sanitizeHtml(h.situation)} - ${sanitizeHtml(h.thought)}</p>`).join('');
+                updateStreak('cbt');
+                fields.forEach(f => document.getElementById(`cbt-${f}`).value = '');
+                document.getElementById('cbt-error').textContent = '';
+                alert('Thought record saved successfully!');
+            });
+
+            // Gratitude
+            const gratitudeHistory = document.getElementById('gratitude-history');
+            gratitudeHistory.innerHTML = JSON.parse(localStorage.getItem('gratitudeHistory') || '[]')
+                .map(h => `<p>${new Date(h.date).toLocaleString()}: ${sanitizeHtml(h.response)}</p>`).join('');
+            document.getElementById('gratitude-submit').addEventListener('click', () => {
+                const items = validateItems(document.getElementById('gratitude-input').value, 3);
+                if (!items) {
+                    document.getElementById('gratitude-error').textContent = 'Please enter at least 3 unique items without extra spaces.';
+                    return;
+                }
+                const history = JSON.parse(localStorage.getItem('gratitudeHistory') || '[]');
+                history.push({ date: new Date().toISOString(), response: items.join(', ') });
+                localStorage.setItem('gratitudeHistory', JSON.stringify(history));
+                gratitudeHistory.innerHTML = history.map(h => `<p>${new Date(h.date).toLocaleString()}: ${sanitizeHtml(h.response)}</p>`).join('');
+                updateStreak('gratitude');
+                document.getElementById('gratitude-input').value = '';
+                document.getElementById('gratitude-error').textContent = '';
+                alert('Thank you for sharing your gratitude!');
+            });
+
+            // Crisis Support
+            document.getElementById('panic-button').addEventListener('click', () => {
+                window.location.href = 'https://findahelpline.com';
+            });
+            if (!/Mobi|Android/i.test(navigator.userAgent)) {
+                document.getElementById('tel-fallback').style.display = 'block';
+            }
+
+            // Pause animations on tab change
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && isBreathing) startBreathing();
+                if (document.hidden && isMeditating) startMindfulness();
+            });
+
+            // Reminder
+            scheduleReminder();
+        });
+    </script>
 </body>
 </html>
