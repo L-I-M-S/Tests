@@ -13,85 +13,204 @@
         <div class="header-content">
             <h1>EaseMind</h1>
             <p>Your gentle companion for navigating grief, panic, and depression.</p>
+            <a href="#crisis" class="crisis-link" aria-label="Access crisis support resources"><i class="fas fa-phone"></i> Crisis Support</a>
         </div>
     </header>
 
-    <nav class="tabs">
-        <button class="tab-btn active" data-tab="breathing"><i class="fas fa-wind"></i> Breathing</button>
-        <button class="tab-btn" data-tab="grounding"><i class="fas fa-leaf"></i> Grounding</button>
-        <button class="tab-btn" data-tab="mood-tracker"><i class="fas fa-chart-line"></i> Mood Tracker</button>
+    <nav class="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="dashboard" role="tab" aria-selected="true" tabindex="0"><i class="fas fa-home"></i> Dashboard</button>
+        <button class="tab-btn" data-tab="breathing" role="tab" aria-selected="false" tabindex="0"><i class="fas fa-wind"></i> Breathing</button>
+        <button class="tab-btn" data-tab="grounding" role="tab" aria-selected="false" tabindex="0"><i class="fas fa-leaf"></i> Grounding</button>
+        <button class="tab-btn" data-tab="mood-tracker" role="tab" aria-selected="false" tabindex="0"><i class="fas fa-chart-line"></i> Mood Tracker</button>
+        <button class="tab-btn" data-tab="cbt-exercise" role="tab" aria-selected="false" tabindex="0"><i class="fas fa-brain"></i> CBT Tools</button>
+        <button class="tab-btn" data-tab="gratitude" role="tab" aria-selected="false" tabindex="0"><i class="fas fa-heart"></i> Gratitude</button>
+        <button class="tab-btn" data-tab="mindfulness" role="tab" aria-selected="false" tabindex="0"><i class="fas fa-spa"></i> Mindfulness</button>
+        <button class="tab-btn" data-tab="resources" role="tab" aria-selected="false" tabindex="0"><i class="fas fa-book"></i> Resources</button>
     </nav>
 
     <main>
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="tab-content active" role="tabpanel">
+            <h2>Welcome to EaseMind</h2>
+            <p>Your daily mental health overview. Start your day with intention.</p>
+            <div class="dashboard-summary">
+                <div class="dash-item">
+                    <h3>Activity Streaks</h3>
+                    <p>Breathing: <span id="dash-breathing-streak">0</span> days</p>
+                    <p>Mood Logs: <span id="dash-mood-streak">0</span> days</p>
+                    <p>Gratitude: <span id="dash-gratitude-streak">0</span> days</p>
+                </div>
+                <div class="dash-item">
+                    <h3>Recent Mood</h3>
+                    <p id="dash-recent-mood">No recent logs</p>
+                </div>
+                <div class="dash-item">
+                    <h3>Daily Inspiration</h3>
+                    <p id="daily-tip">Take a deep breath and embrace the moment.</p>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <button onclick="switchTab('breathing')" aria-label="Start breathing exercise"><i class="fas fa-wind"></i> Quick Breathe</button>
+                <button onclick="switchTab('mood-tracker')" aria-label="Log your mood"><i class="fas fa-chart-line"></i> Log Mood</button>
+                <button onclick="switchTab('gratitude')" aria-label="Write a gratitude note"><i class="fas fa-heart"></i> Gratitude Note</button>
+            </div>
+        </section>
+
         <!-- Breathing Exercise Section -->
-        <section id="breathing" class="tab-content active">
-            <h2>Guided Breathing</h2>
-            <p>Follow the animation to calm your breath and mind. Ideal for panic moments.</p>
+        <section id="breathing" class="tab-content" role="tabpanel">
+            <h2>Guided Box Breathing</h2>
+            <p>Follow the 4-4-4-4 cycle: Inhale, Hold, Exhale, Hold. Ideal for panic and stress.</p>
             <div class="breathing-container">
-                <div id="breathing-circle">
+                <div id="breathing-circle" aria-live="polite">
                     <div class="circle-inner"></div>
                 </div>
                 <p id="breathing-instruction">Ready to begin?</p>
             </div>
-            <button id="start-breathing"><i class="fas fa-play"></i> Start</button>
+            <button id="start-breathing" aria-label="Start or stop breathing exercise"><i class="fas fa-play"></i> Start</button>
             <div class="progress-bar">
                 <div id="breathing-progress"></div>
             </div>
+            <div class="streak-counter">Streak: <span id="breathing-streak">0</span> days</div>
         </section>
 
         <!-- Grounding Exercise Section -->
-        <section id="grounding" class="tab-content">
+        <section id="grounding" class="tab-content" role="tabpanel">
             <h2>5-4-3-2-1 Grounding</h2>
             <p>Anchoring yourself in the present using your senses. Great for overwhelming thoughts.</p>
-            <div id="grounding-step" class="grounding-display"></div>
+            <div id="grounding-step" class="grounding-display" aria-live="polite"></div>
             <div class="grounding-inputs">
-                <textarea id="grounding-response" placeholder="Type your responses here... (e.g., 'Blue sky, green tree')"></textarea>
-                <button id="submit-response" disabled>Submit</button>
+                <textarea id="grounding-response" placeholder="List items separated by commas..." aria-label="Enter grounding responses"></textarea>
+                <button id="submit-response" disabled aria-label="Submit grounding response">Submit</button>
             </div>
-            <button id="start-grounding"><i class="fas fa-play"></i> Start</button>
-            <div id="grounding-history"></div>
+            <button id="start-grounding" aria-label="Start or advance grounding exercise"><i class="fas fa-play"></i> Start</button>
+            <div id="grounding-history">
+                <h3>Past Sessions</h3>
+            </div>
         </section>
 
         <!-- Mood Tracker Section -->
-        <section id="mood-tracker" class="tab-content">
+        <section id="mood-tracker" class="tab-content" role="tabpanel">
             <h2>Mood Tracker</h2>
-            <p>Log your moods daily to observe patterns and progress. Notes can help reflect on triggers.</p>
+            <p>Log your moods daily to observe patterns and progress. Notes help reflect on triggers.</p>
             <div class="mood-log">
-                <div class="mood-emojis">
+                <div class="mood-emojis" role="radiogroup" aria-label="Select your mood">
                     <label>
-                        <input type="radio" name="mood" value="5">
+                        <input type="radio" name="mood" value="5" aria-label="Very Good mood">
                         <span>😊</span> Very Good
                     </label>
                     <label>
-                        <input type="radio" name="mood" value="4">
+                        <input type="radio" name="mood" value="4" aria-label="Good mood">
                         <span>🙂</span> Good
                     </label>
                     <label>
-                        <input type="radio" name="mood" value="3">
+                        <input type="radio" name="mood" value="3" aria-label="Neutral mood">
                         <span>😐</span> Neutral
                     </label>
                     <label>
-                        <input type="radio" name="mood" value="2">
+                        <input type="radio" name="mood" value="2" aria-label="Low mood">
                         <span>🙁</span> Low
                     </label>
                     <label>
-                        <input type="radio" name="mood" value="1">
+                        <input type="radio" name="mood" value="1" aria-label="Very Low mood">
                         <span>😢</span> Very Low
                     </label>
                 </div>
-                <textarea id="mood-notes" placeholder="What influenced your mood today? (optional)"></textarea>
-                <button id="log-mood" disabled><i class="fas fa-save"></i> Log Mood</button>
+                <textarea id="mood-notes" placeholder="What influenced your mood today? (optional)" aria-label="Add mood notes"></textarea>
+                <button id="log-mood" disabled aria-label="Log your mood"><i class="fas fa-save"></i> Log Mood</button>
             </div>
-            <canvas id="mood-chart" width="400" height="200"></canvas>
+            <canvas id="mood-chart" width="400" height="200" aria-label="Mood trend chart"></canvas>
             <div id="mood-history">
                 <h3>Past Entries</h3>
-                <!-- Entries will be appended here -->
+            </div>
+            <div class="streak-counter">Streak: <span id="mood-streak">0</span> days</div>
+        </section>
+
+        <!-- CBT Exercise Section -->
+        <section id="cbt-exercise" class="tab-content" role="tabpanel">
+            <h2>CBT Thought Record</h2>
+            <p>Challenge negative thoughts using Cognitive Behavioral Therapy techniques.</p>
+            <div class="cbt-form">
+                <label for="cbt-situation">Situation</label>
+                <textarea id="cbt-situation" placeholder="What happened? (e.g., Argument with a friend)" aria-label="Describe the situation"></textarea>
+                <label for="cbt-thought">Negative Thought</label>
+                <textarea id="cbt-thought" placeholder="What did you think? (e.g., They hate me)" aria-label="Describe the negative thought"></textarea>
+                <label for="cbt-evidence-for">Evidence For</label>
+                <textarea id="cbt-evidence-for" placeholder="What supports this thought?" aria-label="List evidence supporting the thought"></textarea>
+                <label for="cbt-evidence-against">Evidence Against</label>
+                <textarea id="cbt-evidence-against" placeholder="What contradicts this thought?" aria-label="List evidence against the thought"></textarea>
+                <label for="cbt-balanced">Balanced Thought</label>
+                <textarea id="cbt-balanced" placeholder="A more balanced perspective" aria-label="Write a balanced thought"></textarea>
+                <button id="log-cbt" disabled aria-label="Save thought record"><i class="fas fa-save"></i> Save Thought Record</button>
+            </div>
+            <div id="cbt-history">
+                <h3>Past Thought Records</h3>
+            </div>
+        </section>
+
+        <!-- Gratitude Journal Section -->
+        <section id="gratitude" class="tab-content" role="tabpanel">
+            <h2>Gratitude Journal</h2>
+            <p>Reflect on positive aspects to boost mood and resilience. List 3 things you’re grateful for.</p>
+            <div class="gratitude-form">
+                <textarea id="gratitude-entry" placeholder="What are you grateful for today? List 3 things..." aria-label="Write gratitude entry"></textarea>
+                <button id="log-gratitude" disabled aria-label="Save gratitude entry"><i class="fas fa-save"></i> Save Entry</button>
+            </div>
+            <div id="gratitude-history">
+                <h3>Past Entries</h3>
+            </div>
+            <div class="streak-counter">Streak: <span id="gratitude-streak">0</span> days</div>
+        </section>
+
+        <!-- Mindfulness Meditation Section -->
+        <section id="mindfulness" class="tab-content" role="tabpanel">
+            <h2>Mindfulness Meditation</h2>
+            <p>Practice a 1-minute guided mindfulness exercise to center yourself. No audio, just calm prompts.</p>
+            <div class="mindfulness-container">
+                <p id="mindfulness-instruction" aria-live="polite">Ready to begin?</p>
+                <div class="progress-bar">
+                    <div id="mindfulness-progress"></div>
+                </div>
+            </div>
+            <button id="start-mindfulness" aria-label="Start or stop mindfulness meditation"><i class="fas fa-play"></i> Start</button>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" class="tab-content" role="tabpanel">
+            <h2>Educational Resources</h2>
+            <p>Learn more about mental health with curated, evidence-based content.</p>
+            <div class="resource-list">
+                <div class="resource-item">
+                    <h3>Understanding Anxiety</h3>
+                    <p>Anxiety is a normal response to stress, but when overwhelming, it can disrupt life. Learn coping strategies.</p>
+                    <a href="#" class="resource-link" aria-label="Read more about anxiety">Read More</a>
+                </div>
+                <div class="resource-item">
+                    <h3>Managing Depression</h3>
+                    <p>Depression impacts mood and energy. Discover evidence-based ways to manage symptoms.</p>
+                    <a href="#" class="resource-link" aria-label="Read more about depression">Read More</a>
+                </div>
+                <div class="resource-item">
+                    <h3>Navigating Grief</h3>
+                    <p>Grief is a natural response to loss. Explore stages and healthy coping methods.</p>
+                    <a href="#" class="resource-link" aria-label="Read more about grief">Read More</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Crisis Support Section -->
+        <section id="crisis" class="tab-content" role="tabpanel">
+            <h2>Crisis Support</h2>
+            <p>In a crisis? Reach out for immediate help.</p>
+            <div class="crisis-resources">
+                <p><strong>U.S. Crisis Line:</strong> Call <a href="tel:988" aria-label="Call U.S. crisis line">988</a></p>
+                <p><strong>International:</strong> Find your local crisis line at <a href="https://findahelpline.com" aria-label="Find international crisis lines">findahelpline.com</a></p>
+                <p><strong>Emergency:</strong> If in immediate danger, call <a href="tel:911" aria-label="Call emergency services">911</a> (U.S.) or your local emergency number.</p>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2025 EaseMind. For immediate help, call <a href="tel:988">988</a> (U.S.) or your local crisis line. <a href="#">Privacy Policy</a></p>
+        <p>&copy; 2025 EaseMind. <a href="#privacy" aria-label="View privacy policy">Privacy Policy</a> | Data secured with encryption. For immediate help, call <a href="tel:988" aria-label="Call U.S. crisis line">988</a> (U.S.).</p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
