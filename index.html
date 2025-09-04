@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EaseMind - Mental Health Companion</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>EaseMind</h1>
+            <p>Your gentle companion for navigating grief, panic, and depression.</p>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab-btn active" data-tab="breathing"><i class="fas fa-wind"></i> Breathing</button>
+        <button class="tab-btn" data-tab="grounding"><i class="fas fa-leaf"></i> Grounding</button>
+        <button class="tab-btn" data-tab="mood-tracker"><i class="fas fa-chart-line"></i> Mood Tracker</button>
+    </nav>
+
+    <main>
+        <!-- Breathing Exercise Section -->
+        <section id="breathing" class="tab-content active">
+            <h2>Guided Breathing</h2>
+            <p>Follow the animation to calm your breath and mind. Ideal for panic moments.</p>
+            <div class="breathing-container">
+                <div id="breathing-circle">
+                    <div class="circle-inner"></div>
+                </div>
+                <p id="breathing-instruction">Ready to begin?</p>
+            </div>
+            <button id="start-breathing"><i class="fas fa-play"></i> Start</button>
+            <div class="progress-bar">
+                <div id="breathing-progress"></div>
+            </div>
+        </section>
+
+        <!-- Grounding Exercise Section -->
+        <section id="grounding" class="tab-content">
+            <h2>5-4-3-2-1 Grounding</h2>
+            <p>Anchoring yourself in the present using your senses. Great for overwhelming thoughts.</p>
+            <div id="grounding-step" class="grounding-display"></div>
+            <div class="grounding-inputs">
+                <textarea id="grounding-response" placeholder="Type your responses here... (e.g., 'Blue sky, green tree')"></textarea>
+                <button id="submit-response" disabled>Submit</button>
+            </div>
+            <button id="start-grounding"><i class="fas fa-play"></i> Start</button>
+            <div id="grounding-history"></div>
+        </section>
+
+        <!-- Mood Tracker Section -->
+        <section id="mood-tracker" class="tab-content">
+            <h2>Mood Tracker</h2>
+            <p>Log your moods daily to observe patterns and progress. Notes can help reflect on triggers.</p>
+            <div class="mood-log">
+                <div class="mood-emojis">
+                    <label>
+                        <input type="radio" name="mood" value="5">
+                        <span>😊</span> Very Good
+                    </label>
+                    <label>
+                        <input type="radio" name="mood" value="4">
+                        <span>🙂</span> Good
+                    </label>
+                    <label>
+                        <input type="radio" name="mood" value="3">
+                        <span>😐</span> Neutral
+                    </label>
+                    <label>
+                        <input type="radio" name="mood" value="2">
+                        <span>🙁</span> Low
+                    </label>
+                    <label>
+                        <input type="radio" name="mood" value="1">
+                        <span>😢</span> Very Low
+                    </label>
+                </div>
+                <textarea id="mood-notes" placeholder="What influenced your mood today? (optional)"></textarea>
+                <button id="log-mood" disabled><i class="fas fa-save"></i> Log Mood</button>
+            </div>
+            <canvas id="mood-chart" width="400" height="200"></canvas>
+            <div id="mood-history">
+                <h3>Past Entries</h3>
+                <!-- Entries will be appended here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 EaseMind. For immediate help, call <a href="tel:988">988</a> (U.S.) or your local crisis line. <a href="#">Privacy Policy</a></p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
