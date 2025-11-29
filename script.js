@@ -392,13 +392,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateMoodChart() {
-        if (!moodChartCanvas || typeof Chart === 'undefined') return;
-        const ctx = moodChartCanvas.getContext('2d');
-        if (moodChart) moodChart.destroy();
+    // Guard: make sure canvas element exists
+    if (!moodChartCanvas) return;
 
-        const labels = moods.length ? moods.map(m => new Date(m.timestamp).toLocaleDateString()) : ['No data'];
-        const dataValues = moods.length ? moods.map(m => m.value) : [0];
+    // Guard: make sure Chart.js is available (CDN loaded)
+    if (typeof Chart === 'undefined') {
+        console.warn('Chart.js is not available – skipping mood chart.');
+        return;
+    }
 
+    const ctx = moodChartCanvas.getContext('2d');
+    if (!ctx) {
+        console.warn('Could not get 2D context for mood chart canvas.');
+        return;
+    }
+
+    if (moodChart) {
+        try {
+            moodChart.destroy();
+        } catch (err) {
+            console.warn('Error destroying existing mood chart instance:', err);
+        }
+    }
+
+    const labels = moods.length
+        ? moods.map(m => new Date(m.timestamp).toLocaleDateString())
+        : ['No data'];
+
+    const dataValues = moods.length
+        ? moods.map(m => m.value)
+        : [0];
+
+    try {
         moodChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -427,7 +452,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+    } catch (err) {
+        console.error('Error creating mood chart:', err);
     }
+}
+
 
     function appendMoodToHistory(mood) {
         if (!moodHistory) return;
@@ -458,9 +487,22 @@ document.addEventListener('DOMContentLoaded', () => {
         dashRecent.innerHTML = `${emoji} ${lastMood.value}/5 on ${new Date(lastMood.timestamp).toLocaleDateString()}`;
     }
 
+    try {
     updateMoodChart();
+} catch (err) {
+    console.error('updateMoodChart failed:', err);
+}
+try {
     rebuildMoodHistory();
+} catch (err) {
+    console.error('rebuildMoodHistory failed:', err);
+}
+try {
     updateDashRecentMood();
+} catch (err) {
+    console.error('updateDashRecentMood failed:', err);
+}
+
 
     if (logMoodBtn) {
         logMoodBtn.addEventListener('click', () => {
